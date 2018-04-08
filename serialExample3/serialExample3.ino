@@ -5,11 +5,11 @@
 #define BUFFER_SIZE 16
 #define UNUSED -1
 #define LED_OUT 13
+#define OK_MSG "OK"
 
 int inByte = 0;                 // incoming serial byte
 int ptr = 0;                    // array pointer 
 int frameBuffer[BUFFER_SIZE];   // buffer for characters
-int colorData[4];
 
 
 // the setup function runs once when you press reset or power the board
@@ -39,20 +39,22 @@ void setup() {
                    ptr++;
                 } else {
                   // end of chunk
-                  
- 
-                  String chunk = printChunk();
+                  String chunk = calcChunk();
                   Serial.println("Chunk was:");
                   Serial.println(chunk);
+
+                  // little visual test of "cat" or other data
                   if(chunk == "cat"){
-                                     digitalWrite(LED_OUT, HIGH);
+                    digitalWrite(LED_OUT, HIGH);
                   } else{
                     Serial.println("turn off led?");
-                                    digitalWrite(LED_OUT, LOW);
+                    digitalWrite(LED_OUT, LOW);
                   }
-              
+                  
+                  Serial.write(OK_MSG);
                   resetBuffer();
-                  ptr = 0;        // reset ptr
+                  
+                          
                 }               
                 // send an ack
         }
@@ -62,7 +64,7 @@ void setup() {
  * Return the ascii representation of the bytes sent
  * TODO a better way to do this using char[] and not String?
  */
-String printChunk(){
+String calcChunk(){
   String tmp; 
   for(int i=0; i<BUFFER_SIZE; i++){
     if(frameBuffer[i] != UNUSED){
@@ -80,6 +82,7 @@ void initializeBuffer(){
 
 void resetBuffer(){
   initializeBuffer();
+  ptr = 0;
 }
 
 
