@@ -1,22 +1,23 @@
-/*
-  Serial Example 2
 
-  Sends and receives serial data
-*/
+#include <stdlib.h>
 
 #define BREAK_CHAR 10
-#define BUFFER_SIZE 5
+#define BUFFER_SIZE 16
 #define UNUSED -1
 
-int inByte = 0;                                 // incoming serial byte
-int frameBuffer[BUFFER_SIZE] {UNUSED,UNUSED,UNUSED,UNUSED,UNUSED};  // buffer for characters
-int ptr = 0;                                     // array pointer? 
+int inByte = 0;                 // incoming serial byte
+int ptr = 0;                    // array pointer 
+int frameBuffer[BUFFER_SIZE];   // buffer for characters
+int colorData[4];
+
 
 // the setup function runs once when you press reset or power the board
 void setup() {
   Serial.begin(57600);
   Serial.println("hello");
+  initializeBuffer();
 }
+
 
 /*
  * So if I want to send numbers between 0-255 from my openframeworks project
@@ -28,9 +29,6 @@ void setup() {
  */
 
  void loop() {
-
-        // send data only when you receive data:
-
         if (Serial.available() > 0) { 
                 inByte = Serial.read(); 
                
@@ -38,17 +36,41 @@ void setup() {
                    frameBuffer[ptr] = inByte;
                    ptr++;
                 } else {
-                  Serial.println("end of chunk");
+                  // end of chunk
+                  String chunk = printChunk();
                   Serial.println("Chunk was:");
-                  for(int i=0; i< BUFFER_SIZE; i++){
-                    if(frameBuffer[i] != UNUSED){
-                      Serial.println(frameBuffer[i]);  
-                    }
-                    frameBuffer[i] = -1;
-                  }
-                  ptr = 0; // reset ptr
-                }
+                  Serial.println(chunk);
+                  resetBuffer();
+                  ptr = 0;        // reset ptr
+                }               
+                // send an ack
         }
 }
- 
+
+/*
+ * Return the ascii representation of the bytes sent
+ * TODO a better way to do this using char[] and not String?
+ */
+String printChunk(){
+  String tmp; 
+  for(int i=0; i<BUFFER_SIZE; i++){
+    if(frameBuffer[i] != UNUSED){
+      tmp+=char(frameBuffer[i]);
+    }
+  }
+  return tmp;
+}
+
+void initializeBuffer(){
+  for(int i=0; i< BUFFER_SIZE; i++){
+    frameBuffer[i] = UNUSED;
+  }
+}
+
+void resetBuffer(){
+  initializeBuffer();
+}
+
+
+
 
