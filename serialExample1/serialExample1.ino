@@ -39,10 +39,14 @@ void loop() {
       Serial.read(); // read this char off the buffer
       state = Serial.parseInt();
       digitalWrite(led,state);
+      //Serial.write(String("ack") + String(state));
+//      Serial.write(100);
+//      Serial.write("\n");
     }
     // erase buffer
     while( Serial.available() > 0 ){
       Serial.read();
+      
     }
     
   }
