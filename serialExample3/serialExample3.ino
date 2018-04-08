@@ -4,6 +4,7 @@
 #define BREAK_CHAR 10
 #define BUFFER_SIZE 16
 #define UNUSED -1
+#define LED_OUT 13
 
 int inByte = 0;                 // incoming serial byte
 int ptr = 0;                    // array pointer 
@@ -15,6 +16,7 @@ int colorData[4];
 void setup() {
   Serial.begin(57600);
   Serial.println("hello");
+  pinMode(LED_OUT, OUTPUT);
   initializeBuffer();
 }
 
@@ -31,15 +33,24 @@ void setup() {
  void loop() {
         if (Serial.available() > 0) { 
                 inByte = Serial.read(); 
-               
+                digitalWrite(LED_OUT, LOW);
                 if(inByte != BREAK_CHAR){
                    frameBuffer[ptr] = inByte;
                    ptr++;
                 } else {
                   // end of chunk
+                  
+ 
                   String chunk = printChunk();
                   Serial.println("Chunk was:");
                   Serial.println(chunk);
+                  if(chunk == "cat"){
+                                     digitalWrite(LED_OUT, HIGH);
+                  } else{
+                    Serial.println("turn off led?");
+                                    digitalWrite(LED_OUT, LOW);
+                  }
+              
                   resetBuffer();
                   ptr = 0;        // reset ptr
                 }               
