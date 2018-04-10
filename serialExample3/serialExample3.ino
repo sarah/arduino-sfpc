@@ -6,6 +6,7 @@
 #define UNUSED -1
 #define LED_OUT 13
 #define OK_MSG "OK"
+#define BAUD_RATE 57600
 
 int inByte = 0;                 // incoming serial byte
 int ptr = 0;                    // array pointer 
@@ -14,7 +15,7 @@ int frameBuffer[BUFFER_SIZE];   // buffer for characters
 
 // the setup function runs once when you press reset or power the board
 void setup() {
-  Serial.begin(57600);
+  Serial.begin(BAUD_RATE);
   Serial.println("hello");
   pinMode(LED_OUT, OUTPUT);
   initializeBuffer();

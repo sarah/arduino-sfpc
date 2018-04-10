@@ -22,14 +22,16 @@
   http://www.arduino.cc/en/Tutorial/Blink
 */
 
-int led = 11;
+#define BAUD_RATE 57600
+
+int led = 13;
 int state;
 
 // the setup function runs once when you press reset or power the board
 void setup() {
   // initialize digital pin LED_BUILTIN as an output.
   pinMode(led, OUTPUT);
-  Serial.begin(57600);
+  Serial.begin(BAUD_RATE);
 }
 
 // the loop function runs over and over again forever
@@ -39,13 +41,18 @@ void loop() {
       Serial.read(); // read this char off the buffer
       state = Serial.parseInt();
       digitalWrite(led,state);
-      //Serial.write(String("ack") + String(state));
-//      Serial.write(100);
-//      Serial.write("\n");
+      
+      if(state == 1){
+        Serial.println("turning on");  
+      } else {
+        Serial.println("turning off");
+      }
+      
     }
     // erase buffer
     while( Serial.available() > 0 ){
       Serial.read();
+      Serial.println("A");
       
     }
     
