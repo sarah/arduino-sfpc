@@ -19,6 +19,8 @@
 int inByte = 0;                 // incoming serial byte
 int ptr = 0;                    // array pointer 
 int frameBuffer[BUFFER_SIZE];   // buffer for characters
+bool isPurring = false;
+bool isTalking = true;
 
 void LightArea(int[],int, bool);
 
@@ -42,42 +44,31 @@ void setup() {
 }
 
 void loop() {
-//  LightArea(center, centerSize, true);
-//  LightAreaCircle(4);
-  delay(1);
+//  delay(1); doesn't seem necessary
 
   if (Serial.available() > 0) { 
-            inByte = Serial.read(); 
-            
-            if(inByte != BREAK_CHAR){
-               frameBuffer[ptr] = inByte;
-               ptr++;
-            } else {
-              // end of chunk
-              String chunk = calcChunk();
-              Serial.println("Chunk was:");
-              Serial.println(chunk);
-              LightAreaCircle(chunk.toFloat());
-              matrix.show();
-
-              // little visual test of "cat" or other data
-//              if(chunk == "cat"){
-//                Serial.println("turn on led");
-//                matrix.setPixelColor(0, 255,0,0); 
-//                matrix.show();
-//              } else{
-//                Serial.println("turn off led");
-//                matrix.setPixelColor(0, 0,0,0);
-//                matrix.show();
-//              }
-              
-              Serial.write(OK_MSG);
-              resetBuffer();   
-            }               
-            // send an ack
+            if(isPurring){
+              PurrLights();
+            }             
     }
 }
 
+void PurrLights(){
+  inByte = Serial.read(); 
+  if(inByte != BREAK_CHAR){
+     frameBuffer[ptr] = inByte;
+     ptr++;
+  } else {
+    // end of chunk
+    String chunk = calcChunk();
+    Serial.println("Chunk was:");
+    Serial.println(chunk);
+    // TODO send an ack -- screen seems to freeze up after a while
+    LightAreaCircle(chunk.toFloat());
+    Serial.write(OK_MSG);
+    resetBuffer();   
+  }  
+}
 
 void LightAreaCircle(float input){
 //  float radius = sin(millis()/10000.0) * 3 + 3;
@@ -106,21 +97,6 @@ void LightAreaRandom(){
       matrix.show();
       delay(10);
    }
-  
-}
-
-
-void LightArea(const int Area[],int sizeArr, bool isOn){
-   for(int i=0; i < sizeArr; i++){
-    int c = Area[i];
-    if(isOn){
-      matrix.setPixelColor(c, 255, 255, 255);  
-    } else {
-      matrix.setPixelColor(c, 0, 0, 0);  
-    }
-    
-  }  
-  matrix.show();
 }
 
 
