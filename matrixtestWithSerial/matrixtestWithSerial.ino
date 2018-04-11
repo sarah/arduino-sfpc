@@ -43,32 +43,48 @@ void setup() {
   initializeBuffer();
 }
 
+int x    = matrix.width();
+int pass = 0;
+
 void loop() {
 //  delay(1); doesn't seem necessary
 
 
   if(isPurring){
     PurrLights();
-  }             
+  }          
+  if(isTalking){
+    Demand("PET ME", 100);
+  }
+}
 
+void Demand(String demand, int _delay){
+  matrix.fillScreen(0);
+  matrix.setCursor(x, 0);
+  matrix.print(F("PET ME."));
+  if(--x < -36) {
+    x = matrix.width();
+  }
+  matrix.show();
+  delay(_delay);
 }
 
 void PurrLights(){
    if (Serial.available() > 0) { 
-  inByte = Serial.read(); 
-  if(inByte != BREAK_CHAR){
-     frameBuffer[ptr] = inByte;
-     ptr++;
-  } else {
-    // end of chunk
-    String chunk = calcChunk();
-    Serial.println("Chunk was:");
-    Serial.println(chunk);
-    // TODO send an ack -- screen seems to freeze up after a while
-    LightAreaCircle(chunk.toFloat());
-    Serial.write(OK_MSG);
-    resetBuffer();   
-  }  
+      inByte = Serial.read(); 
+      if(inByte != BREAK_CHAR){
+         frameBuffer[ptr] = inByte;
+         ptr++;
+      } else {
+        // end of chunk
+        String chunk = calcChunk();
+        Serial.println("Chunk was:");
+        Serial.println(chunk);
+        // TODO send an ack -- screen seems to freeze up after a while
+        LightAreaCircle(chunk.toFloat());
+        Serial.write(OK_MSG);
+        resetBuffer();   
+      }  
    } else {
     // TODO throw error
    }
