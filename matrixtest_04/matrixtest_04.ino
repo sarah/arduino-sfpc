@@ -36,13 +36,40 @@ void setup() {
 
 void loop() {
 //  LightArea(center, centerSize, true);
-  LightArea(r1, r1Size, true);
-  delay(1000);
-  LightArea(r1, r1Size, false);
-//  LightArea(center,centerSize,false);
-  
-  delay(1000);
+  LightAreaCircle();
+  //delay(1);
 }
+
+
+void LightAreaCircle(){
+  float radius = sin(millis()/1000.0) * 3 + 3;
+   for(int i=0; i < 8; i++){
+     for(int j=0; j < 8; j++){
+        int pos = i * 8 + j;
+        float iif = (float)i;
+        float jf = (float)j;
+        
+        float dist = sqrt( ( iif-3.5)*( iif-3.5) + (jf-3.5)*(jf-3.5));
+        if (dist < radius){
+          float brigt = 255 - (dist / radius) * 255;
+          matrix.setPixelColor(pos, brigt,brigt,brigt); 
+        } else {
+           matrix.setPixelColor(pos, 0,0,0); 
+        }
+     }
+   }
+  matrix.show();
+}
+
+void LightAreaRandom(){
+  for(int i=0; i < 64; i++){
+      matrix.setPixelColor(i, random(255), random(255), random(255)); 
+      matrix.show();
+      delay(10);
+   }
+  
+}
+
 
 void LightArea(const int Area[],int sizeArr, bool isOn){
    for(int i=0; i < sizeArr; i++){
