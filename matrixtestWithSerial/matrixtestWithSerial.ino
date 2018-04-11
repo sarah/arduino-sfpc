@@ -46,14 +46,15 @@ void setup() {
 void loop() {
 //  delay(1); doesn't seem necessary
 
-  if (Serial.available() > 0) { 
-            if(isPurring){
-              PurrLights();
-            }             
-    }
+
+  if(isPurring){
+    PurrLights();
+  }             
+
 }
 
 void PurrLights(){
+   if (Serial.available() > 0) { 
   inByte = Serial.read(); 
   if(inByte != BREAK_CHAR){
      frameBuffer[ptr] = inByte;
@@ -68,6 +69,9 @@ void PurrLights(){
     Serial.write(OK_MSG);
     resetBuffer();   
   }  
+   } else {
+    // TODO throw error
+   }
 }
 
 void LightAreaCircle(float input){
