@@ -16,19 +16,29 @@
 #define OK_MSG "OK"
 #define BAUD_RATE 57600
 
+void LightArea(int[],int, bool);
+
+// SERIAL
 int inByte = 0;                 // incoming serial byte
 int ptr = 0;                    // array pointer 
 int frameBuffer[BUFFER_SIZE];   // buffer for characters
-bool isPurring = false;
-bool isTalking = true;
 
-void LightArea(int[],int, bool);
+// STATES
+bool isPurring = true;
+bool isTalking = false;
 
+// FORCE SENSOR (PETTING)
+int pressurePin = A0;
+int force;
+
+// MATRIX
 Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(8, 8, PIN,
   NEO_MATRIX_TOP     + NEO_MATRIX_RIGHT +
   NEO_MATRIX_COLUMNS + NEO_MATRIX_PROGRESSIVE,
   NEO_GRB            + NEO_KHZ800);
-
+ 
+int x    = matrix.width();
+int pass = 0;
 const uint16_t colors[] = {
   matrix.Color(255, 0, 0), matrix.Color(0, 255, 0), matrix.Color(0, 0, 255) };
 
@@ -43,18 +53,29 @@ void setup() {
   initializeBuffer();
 }
 
-int x    = matrix.width();
-int pass = 0;
-
 void loop() {
 //  delay(1); doesn't seem necessary
-
-
+  force = analogRead(pressurePin);
+//  Serial.println(force);
+  
   if(isPurring){
+    // TODO send a start signal to OF or there is no input to PurrLights()
     PurrLights();
   }          
   if(isTalking){
-    Demand("PET ME", 100);
+    // TODO blip or bleep? 
+    // OK this whole thing doesn't work, it freezes in "PET ME"
+    // if it goes to harder.
+    // i wonder a better way to do this? like -- a little separate screen?
+    // a better program setup? the matrix for color patterns only? 
+    if(force < 50){
+      Serial.println("PET ME");
+      Demand("PET ME.", 100);
+    } else if(force > 50 && force < 100){
+      Serial.println("HARDER");
+      Demand("HARDER", 100);
+    } 
+    
   }
 }
 
