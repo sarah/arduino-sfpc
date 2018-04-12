@@ -45,7 +45,7 @@ const uint16_t colors[] = {
 
 void setup() {
   Serial.begin(BAUD_RATE);
-  Serial.println("hello");
+//  Serial.println("hello");
   matrix.begin();
   matrix.setTextWrap(false);
   matrix.setBrightness(3);
@@ -54,29 +54,12 @@ void setup() {
 }
 
 void loop() {
-//  delay(1); doesn't seem necessary
-  force = analogRead(pressurePin);
-//  Serial.println(force);
+
   
   if(isPurring){
     // TODO send a start signal to OF or there is no input to PurrLights()
     PurrLights();
   }          
-  if(isTalking){
-    // TODO blip or bleep? 
-    // OK this whole thing doesn't work, it freezes in "PET ME"
-    // if it goes to harder.
-    // i wonder a better way to do this? like -- a little separate screen?
-    // a better program setup? the matrix for color patterns only? 
-    if(force < 50){
-      Serial.println("PET ME");
-      Demand("PET ME.", 100);
-    } else if(force > 50 && force < 100){
-      Serial.println("HARDER");
-      Demand("HARDER", 100);
-    } 
-    
-  }
 }
 
 void Demand(String demand, int _delay){
@@ -91,24 +74,12 @@ void Demand(String demand, int _delay){
 }
 
 void PurrLights(){
-   if (Serial.available() > 0) { 
+   while (Serial.available() > 0) { 
       inByte = Serial.read(); 
-      if(inByte != BREAK_CHAR){
-         frameBuffer[ptr] = inByte;
-         ptr++;
-      } else {
-        // end of chunk
-        String chunk = calcChunk();
-        Serial.println("Chunk was:");
-        Serial.println(chunk);
-        // TODO send an ack -- screen seems to freeze up after a while
-        LightAreaCircle(chunk.toFloat());
-        Serial.write(OK_MSG);
-        resetBuffer();   
-      }  
-   } else {
-    // TODO throw error
-   }
+      float radius = map(inByte,0,255,0,6);
+      LightAreaCircle(radius); 
+      // Maybe ack here tbd
+   } 
 }
 
 void LightAreaCircle(float input){
@@ -122,7 +93,8 @@ void LightAreaCircle(float input){
         
         float dist = sqrt( ( iif-3.5)*( iif-3.5) + (jf-3.5)*(jf-3.5));
         if (dist < radius){
-          float brigt = 255 - (dist / radius) * 255; // diff shades of grey -> white
+          
+          float brigt = 255 - (dist / max(radius,.001)) * 255; // diff shades of grey -> white
           matrix.setPixelColor(pos, brigt,brigt,brigt); 
         } else {
            matrix.setPixelColor(pos, 0,0,0); 
@@ -166,3 +138,23 @@ void resetBuffer(){
   ptr = 0;
 }
 
+
+//  delay(1); //doesn't seem necessary
+//  Serial.write(OK_MSG);
+//  force = analogRead(pressurePin);
+//  Serial.println(force);
+
+//  if(isTalking){
+//    // TODO blip or bleep? 
+//    // OK this whole thing doesn't work, it freezes in "PET ME"
+//    // if it goes to harder.
+//    // i wonder a better way to do this? like -- a little separate screen?
+//    // a better program setup? the matrix for color patterns only? 
+//    if(force < 50){
+//      Serial.println("PET ME");
+//      Demand("PET ME.", 100);
+//    } else if(force > 50 && force < 100){
+//      Serial.println("HARDER");
+//      Demand("HARDER", 100);
+//    } 
+//  }
