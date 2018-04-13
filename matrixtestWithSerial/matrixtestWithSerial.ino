@@ -54,29 +54,19 @@ void setup() {
 }
 
 void loop() {
-
-  
   if(isPurring){
     // TODO send a start signal to OF or there is no input to PurrLights()
     PurrLights();
   }          
 }
 
-void Demand(String demand, int _delay){
-  matrix.fillScreen(0);
-  matrix.setCursor(x, 0);
-  matrix.print(F("PET ME."));
-  if(--x < -36) {
-    x = matrix.width();
-  }
-  matrix.show();
-  delay(_delay);
-}
+
 
 void PurrLights(){
    while (Serial.available() > 0) { 
       inByte = Serial.read(); 
-      float radius = map(inByte,0,255,0,6);
+//      float radius = map(inByte,0,255,0,6);
+      float radius = (float(inByte)/255.0)*6.0;
       LightAreaCircle(radius); 
       // Maybe ack here tbd
    } 
@@ -138,6 +128,16 @@ void resetBuffer(){
   ptr = 0;
 }
 
+//void Demand(String demand, int _delay){
+//  matrix.fillScreen(0);
+//  matrix.setCursor(x, 0);
+//  matrix.print(F("PET ME."));
+//  if(--x < -36) {
+//    x = matrix.width();
+//  }
+//  matrix.show();
+//  delay(_delay);
+//}
 
 //  delay(1); //doesn't seem necessary
 //  Serial.write(OK_MSG);
