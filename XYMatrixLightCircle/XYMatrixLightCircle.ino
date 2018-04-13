@@ -202,13 +202,11 @@ void LightAreaCircle(float input){
       float yf = (float)y;
       float dist = sqrt( ( xf-3.5)*( xf-3.5) + (yf-3.5)*(yf-3.5));
       if(dist < radius){
-        float bright = 255 - (dist / max(radius,.001)) * 255; // diff shades of grey -> white
-        leds[ XY( x,y)] = CHSV(255,255,bright);
+        float bright = 255.0 - (dist / max(radius,.001)) * 255.0; // diff shades of grey -> white
+        leds[ XYsafe( x,y)] = CHSV(255,5,bright);
       } else {
-        leds[ XY( x,y)] = CHSV(0,0,0);
+        leds[ XYsafe( x,y)] = CHSV(0,0,0);
       }
-
-      
     }
   }
 }
