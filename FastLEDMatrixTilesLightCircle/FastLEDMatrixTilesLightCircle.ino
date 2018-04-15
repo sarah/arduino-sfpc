@@ -17,7 +17,7 @@
 #define NUM_LEDS            (MATRIX_WIDTH*MATRIX_HEIGHT)
 
 #define WAITING 0
-#define SOFT_PURR 1
+#define SOFT_PURR 100
 #define MORE_PURR 2
 #define NO_STOP 3
 #define RETRACT 4
@@ -37,16 +37,11 @@ int inByte = 0;
 void setup()
 {
   Serial.begin(57600);
-//  Serial.println("Hello");
+  Log("Hello");
   FastLED.addLeds<CHIPSET, DATA_PIN,  COLOR_ORDER>(leds[0],leds.Size()).setCorrection(TypicalSMD5050);
   FastLED.setBrightness(5);
   FastLED.clear(true);
-//  // Japanese Flag
-//  leds.DrawFilledRectangle(0, 0, leds.Width() - 1, leds.Height() - 1, CRGB(255, 255, 255));
-//  uint16_t r = min((leds.Width() - 1) / 2, (leds.Height() - 1) / 2) - 1;
-//  leds.DrawFilledCircle((leds.Width() - 1) / 2, (leds.Height() - 1) / 2, r, CRGB(255, 0, 0));
-//  FastLED.show();
-//  delay(5000);
+
 }
 #define LOGGING false
 // FORCE SENSOR (PETTING)
@@ -78,9 +73,10 @@ void loop()
   
   if(stateSoftPurr){
     Log("Softpurr");
-    Serial.write(SOFT_PURR);
-    //SoftPurrLights(); 
-    ShowTestLight(0,0);
+  // TODO make an enter state
+    Serial.print(SOFT_PURR);
+    SoftPurrLights(); 
+//    ShowTestLight(0,0);
   } 
 }
 
@@ -93,8 +89,7 @@ void SoftPurrLights(){
   while(Serial.available() > 0){
     inByte = Serial.read();
     float radius = (float(inByte)/255.0)*14.0;
-      ShowTestLight(0,0);
-//    LightAreaCircle(radius);
+    LightAreaCircle(radius);
     FastLED.show();
   }
 }
@@ -143,4 +138,12 @@ void LightAreaCircle(float input){
     }
   }
 }
+
+
+//  // Japanese Flag
+//  leds.DrawFilledRectangle(0, 0, leds.Width() - 1, leds.Height() - 1, CRGB(255, 255, 255));
+//  uint16_t r = min((leds.Width() - 1) / 2, (leds.Height() - 1) / 2) - 1;
+//  leds.DrawFilledCircle((leds.Width() - 1) / 2, (leds.Height() - 1) / 2, r, CRGB(255, 0, 0));
+//  FastLED.show();
+//  delay(5000);
 
