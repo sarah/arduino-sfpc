@@ -34,7 +34,7 @@ void setup()
   
   
   FastLED.addLeds<CHIPSET, DATA_PIN,  COLOR_ORDER>(leds[0],leds.Size()).setCorrection(TypicalSMD5050);
-  FastLED.setBrightness(2);
+  FastLED.setBrightness(50);
   FastLED.clear(true);
  
 
@@ -54,25 +54,36 @@ void setup()
 void loop()
 {
   PurrLights();
-  FastLED.show();
+//  FastLED.show();
   
 }
 
 void PurrLights(){
-  
   while(Serial.available() > 0){
     inByte = Serial.read();
     float radius = (float(inByte)/255.0)*14.0;
-    LightAreaCircle2(radius);
+//    LightAreaCircle(radius);
+    FastLED.show();
   }
 }
 
 void LightAreaCircle2(float radius){
   FastLED.clear();
-  leds.DrawFilledCircle((leds.Width() - 1) / 2, (leds.Height() - 1) / 2, radius, CRGB(255, 255,255));
+  // TODO how to do the brightness here
+  int x = (leds.Width() - 1)/2;
+  int y = (leds.Height() - 1)/2;
+//   float xf = (float)x;
+//      float yf = (float)y;
+//      float dist = sqrt( ( xf-radiusOffset)*( xf-radiusOffset) + (yf-radiusOffset)*(yf-radiusOffset));
+//  leds(x,y).fadeLightBy( 200 );
+//  FastLED.setBrightness(radius);
+//  leds.DrawFilledCircle(x,y, radius, CRGB(255, 255,255));
+  leds.DrawCircle(x,y, radius, CHSV(255, 255,255));
+  
 }
 
 void LightAreaCircle(float input){
+  FastLED.clear();
   int w = MATRIX_WIDTH;
   int h = MATRIX_HEIGHT;
   float radiusOffset = 7.5;
