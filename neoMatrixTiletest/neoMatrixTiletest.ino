@@ -53,7 +53,7 @@
 // There's only one row here, so it doesn't matter if we declare it in row
 // or column order.  The matrices use 800 KHz (v2) pixels that expect GRB
 // color data.
-Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(8, 8, 4, 2, PIN,
+Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(8, 8, 2, 2, PIN,
   NEO_TILE_TOP   + NEO_TILE_LEFT   + NEO_TILE_ROWS   + NEO_TILE_PROGRESSIVE +
   NEO_MATRIX_TOP + NEO_MATRIX_LEFT + NEO_MATRIX_ROWS + NEO_MATRIX_PROGRESSIVE,
   NEO_GRB + NEO_KHZ800);
