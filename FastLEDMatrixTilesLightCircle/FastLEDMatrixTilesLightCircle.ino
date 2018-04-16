@@ -16,9 +16,11 @@
 #define MATRIX_PANEL        (MATRIX_WIDTH*MATRIX_HEIGHT)
 #define NUM_LEDS            (MATRIX_WIDTH*MATRIX_HEIGHT)
 
+#define LOGGING true
+
 #define WAITING 0
 #define SOFT_PURR 100
-#define MORE_PURR 2
+#define MORE_PURR 200
 #define NO_STOP 3
 #define RETRACT 4
 
@@ -43,7 +45,7 @@ void setup()
   FastLED.clear(true);
 
 }
-#define LOGGING false
+
 // FORCE SENSOR (PETTING)
 int pressurePin = A0;
 int force;
@@ -65,19 +67,32 @@ void loop()
   force = analogRead(pressurePin);
   Log((String)force);
   
-  if(force > 50 && force < 100){
+  if((force > 50 && force < 100) && !stateMorePurr){
     Log("MOVING TO SOFT PURR");
     stateWaiting = false;
     stateSoftPurr = true;
   }
   
+  if(force > 150){
+    Log("Moving to moar purr");
+    Serial.print(MORE_PURR);
+    stateSoftPurr = false;
+    stateMorePurr = true;
+  }
+  
   if(stateSoftPurr){
     Log("Softpurr");
-  // TODO make an enter state
     Serial.print(SOFT_PURR);
-    SoftPurrLights(); 
-//    ShowTestLight(0,0);
   } 
+
+  if(stateMorePurr){
+    Log("Sending More purr");
+    Serial.print(MORE_PURR);
+  }
+  
+  if(stateSoftPurr || stateMorePurr){
+    PurrLights();
+  }
 }
 
 void showWaitingState(){
@@ -85,7 +100,8 @@ void showWaitingState(){
     leds.DrawFilledCircle((leds.Width() - 1) / 4, (leds.Height() - 1) / 4, 1, CRGB(255, 0, 0));
     FastLED.show();
 }
-void SoftPurrLights(){
+
+void PurrLights(){
   while(Serial.available() > 0){
     inByte = Serial.read();
     float radius = (float(inByte)/255.0)*14.0;
