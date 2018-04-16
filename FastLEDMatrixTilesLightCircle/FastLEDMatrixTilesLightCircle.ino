@@ -41,7 +41,7 @@ void setup()
   Serial.begin(57600);
   Log("Hello");
   FastLED.addLeds<CHIPSET, DATA_PIN,  COLOR_ORDER>(leds[0],leds.Size()).setCorrection(TypicalSMD5050);
-  FastLED.setBrightness(5);
+  FastLED.setBrightness(20);
   FastLED.clear(true);
 
 }
