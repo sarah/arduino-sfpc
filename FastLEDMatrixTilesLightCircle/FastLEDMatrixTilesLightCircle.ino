@@ -118,7 +118,7 @@ void LightAreaCircle2(float radius){
 //  leds(x,y).fadeLightBy( 200 );
 //  FastLED.setBrightness(radius);
 //  leds.DrawFilledCircle(x,y, radius, CRGB(255, 255,255));
-  leds.DrawCircle(x,y, radius, CHSV(255, 255,255));
+  leds.DrawFilledCircle(x,y, radius, CRGB(255, 255,255));
   
 }
 
