@@ -21,8 +21,8 @@
 #define WAITING 0
 #define SOFT_PURR 100
 #define MORE_PURR 200
-#define NO_STOP 3
-#define RETRACT 4
+#define NO_STOP 300
+#define RETRACT 400
 
 bool stateWaiting =  true;
 bool stateSoftPurr = false;
@@ -36,9 +36,9 @@ cLEDMatrix<MATRIX_TILE_WIDTH, MATRIX_TILE_HEIGHT, HORIZONTAL_MATRIX, MATRIX_TILE
 
 const int petPressurePin = A0;
 const int buttonPin = 2;
-const int timeToWindDown = 5000;
+const int timeToWindDown = 10000;
 unsigned long currentMillis = 0;
-unsigned long previousMillis = 0;   // will store last time the LED was updated
+unsigned long lastPetMillis = 0;   // will store last time the LED was updated
 
 int inByte = 0;
 int force;
@@ -79,7 +79,6 @@ void manageStates(){
 }
 
 void readPetSensor(){
-  
   Log((String)force);
  
   force = analogRead(petPressurePin);
@@ -93,11 +92,24 @@ void readPetSensor(){
     Log("Moving to moar purr");
     stateSoftPurr = false;
     stateMorePurr = true;
+    lastPetMillis = currentMillis;
+    // log current time, so this is "last time we've been above 150"
+  } else {
+      if((currentMillis - lastPetMillis) >= timeToWindDown){
+        stateMorePurr = false;
+        Serial.print(NO_STOP);  
+        stateWaiting = true;    
+  }
+    
+    // if not, how much time have we been not petting?
+    // if time not petting > interval; switch to waiting state (possibly squeak)  
+    // 1
   }
 }
 
 void showWaitingState(){
   // TODO get the circle where I want it.
+    FastLED.clear();
     leds.DrawFilledCircle((leds.Width() - 1) / 4, (leds.Height() - 1) / 4, 1, CRGB(255, 0, 0));
     FastLED.show();
 }
@@ -105,6 +117,7 @@ void showWaitingState(){
 void PurrLights(){
   while(Serial.available() > 0){
     inByte = Serial.read();
+    Serial.flush();
     if(inByte < 251){
       float radius = (float(inByte)/255.0)*10.0;
       LightAreaCircle2(radius);  
@@ -126,7 +139,7 @@ void LightAreaCircle2(float radius){
   // TODO how to do the brightness here
   int x = (leds.Width() - 1)/2;
   int y = (leds.Height() - 1)/2;  
-  leds.DrawFilledCircle(x,y, radius, CRGB(255, 255,255));
+  leds.DrawFilledCircle(x,y, radius, CRGB(255, 255,(255-radius)));
   // just playing with color
 //  leds.DrawFilledCircle(x,y, max(radius-2,1), CHSV(255, 0,50));
 }
@@ -163,8 +176,7 @@ void setup()
   FastLED.addLeds<CHIPSET, DATA_PIN,  COLOR_ORDER>(leds[0],leds.Size()).setCorrection(TypicalSMD5050);
   FastLED.setBrightness(20);
   FastLED.clear(true);
-   pinMode(buttonPin, INPUT);
-
+  pinMode(buttonPin, INPUT);
 }
 
 //  // Japanese Flag
