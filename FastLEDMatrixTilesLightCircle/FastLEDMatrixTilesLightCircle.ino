@@ -33,12 +33,17 @@ bool stateRetract = false;
 // create our matrix based on matrix definition
 cLEDMatrix<MATRIX_TILE_WIDTH, MATRIX_TILE_HEIGHT, HORIZONTAL_MATRIX, MATRIX_TILE_H, MATRIX_TILE_V> leds;
 
-uint8_t angle = 0;
+
+const int petPressurePin = A0;
+const int buttonPin = 2;
+const int timeToWindDown = 5000;
+unsigned long currentMillis = 0;
+unsigned long previousMillis = 0;   // will store last time the LED was updated
+
 int inByte = 0;
-int petPressurePin = A0;
 int force;
-int buttonState = 0;
-int buttonPin = 2;
+int buttonState = 0; 
+
 
 #define LOGGING false
 void Log(String data){
@@ -49,28 +54,15 @@ void Log(String data){
 
 void loop()
 {
+  currentMillis = millis();
+  readPetSensor();
+  manageStates();
+}
 
-  force = analogRead(petPressurePin);
-  Log((String)force);
-  buttonState = digitalRead(buttonPin);
-//  Serial.println((String)force);
-  
+void manageStates(){
   if(stateWaiting){
     Log("Waiting");
     showWaitingState();
-  }
-  
-  // if get an input from a pin, trigger softPurr. TODO figure out sensor later
-  if((force > 50 && force < 100) && !stateMorePurr){
-    Log("MOVING TO SOFT PURR");
-    stateWaiting = false;
-    stateSoftPurr = true;
-  }
-  
-  if(force > 150){
-    Log("Moving to moar purr");
-    stateSoftPurr = false;
-    stateMorePurr = true;
   }
   
   if(stateSoftPurr){
@@ -84,6 +76,29 @@ void loop()
   if(stateSoftPurr || stateMorePurr){
     PurrLights();
   }
+}
+void readPetSensor(){
+  force = analogRead(petPressurePin);
+  Log((String)force);
+  buttonState = digitalRead(buttonPin);
+//  Serial.println((String)force);
+  
+ 
+  
+  // if get an input from a pin, trigger softPurr. TODO figure out sensor later
+  if((force > 50 && force < 100) && !stateMorePurr){
+    Log("MOVING TO SOFT PURR");
+    stateWaiting = false;
+    stateSoftPurr = true;
+  }
+  
+  if(force > 150){
+    Log("Moving to moar purr");
+    stateSoftPurr = false;
+    stateMorePurr = true;
+  }
+
+  
 }
 
 void showWaitingState(){
@@ -115,19 +130,10 @@ void LightAreaCircle2(float radius){
   FastLED.clear();
   // TODO how to do the brightness here
   int x = (leds.Width() - 1)/2;
-  int y = (leds.Height() - 1)/2;
-//   float xf = (float)x;
-//      float yf = (float)y;
-//      float dist = sqrt( ( xf-radiusOffset)*( xf-radiusOffset) + (yf-radiusOffset)*(yf-radiusOffset));
-//  leds(x,y).fade:wLightBy( radius );
-//  FastLED.setBrightness(radius);
-// 
-  
-//    leds.DrawCircle(x,y, radius, CRGB(255, 255,255));  
-  
-  
+  int y = (leds.Height() - 1)/2;  
   leds.DrawFilledCircle(x,y, radius, CRGB(255, 255,255));
-  leds.DrawFilledCircle(x,y, max(radius-2,1), CHSV(255, 0,50));
+  // just playing with color
+//  leds.DrawFilledCircle(x,y, max(radius-2,1), CHSV(255, 0,50));
 }
 
 void LightAreaCircle(float input){
