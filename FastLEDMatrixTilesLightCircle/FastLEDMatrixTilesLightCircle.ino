@@ -95,10 +95,15 @@ void readPetSensor(){
     lastPetMillis = currentMillis;
     // log current time, so this is "last time we've been above 150"
   } else {
-      if((currentMillis - lastPetMillis) >= timeToWindDown){
+      if(currentMillis - lastPetMillis >= timeToWindDown){
         stateMorePurr = false;
         Serial.print(NO_STOP);  
-        stateWaiting = true;    
+        stateWaiting = true;  
+        // TODO figure out the time slow down thing i'm too tired to think right now
+
+
+
+          
   }
     
     // if not, how much time have we been not petting?
