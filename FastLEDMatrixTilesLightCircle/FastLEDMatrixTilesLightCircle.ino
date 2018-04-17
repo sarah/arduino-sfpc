@@ -16,7 +16,7 @@
 #define MATRIX_PANEL        (MATRIX_WIDTH*MATRIX_HEIGHT)
 #define NUM_LEDS            (MATRIX_WIDTH*MATRIX_HEIGHT)
 
-#define LOGGING true
+
 
 #define WAITING 0
 #define SOFT_PURR 100
