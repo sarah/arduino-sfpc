@@ -95,8 +95,12 @@ void showWaitingState(){
 void PurrLights(){
   while(Serial.available() > 0){
     inByte = Serial.read();
-    float radius = (float(inByte)/255.0)*14.0;
-    LightAreaCircle2(radius);
+    if(inByte < 251){
+      float radius = (float(inByte)/255.0)*10.0;
+      LightAreaCircle2(radius);  
+    } else {
+      ShowTestLight(0,0);
+    }
     FastLED.show();
   }
 }
@@ -104,7 +108,7 @@ void PurrLights(){
 void ShowTestLight(int x,int y){
   Log("SHOW TEST LIGHT");
   FastLED.clear();
-  leds(x,y) = CRGB(255,0,0);
+  leds(x,y) = CRGB(0,255,0);
   FastLED.show();
 }
 void LightAreaCircle2(float radius){
@@ -115,11 +119,15 @@ void LightAreaCircle2(float radius){
 //   float xf = (float)x;
 //      float yf = (float)y;
 //      float dist = sqrt( ( xf-radiusOffset)*( xf-radiusOffset) + (yf-radiusOffset)*(yf-radiusOffset));
-//  leds(x,y).fadeLightBy( 200 );
+//  leds(x,y).fade:wLightBy( radius );
 //  FastLED.setBrightness(radius);
-//  leds.DrawFilledCircle(x,y, radius, CRGB(255, 255,255));
-  leds.DrawFilledCircle(x,y, radius, CRGB(255, 255,255));
+// 
   
+//    leds.DrawCircle(x,y, radius, CRGB(255, 255,255));  
+  
+  
+  leds.DrawFilledCircle(x,y, radius, CRGB(255, 255,255));
+  leds.DrawFilledCircle(x,y, max(radius-2,1), CHSV(255, 0,50));
 }
 
 void LightAreaCircle(float input){
