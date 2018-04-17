@@ -63,7 +63,7 @@ void manageStates(){
   if(stateWaiting){
     Log("Waiting");
     showWaitingState();
-  }
+  } 
   
   if(stateSoftPurr){
     Log("Softpurr");
@@ -77,15 +77,12 @@ void manageStates(){
     PurrLights();
   }
 }
+
 void readPetSensor(){
-  force = analogRead(petPressurePin);
+  
   Log((String)force);
-  buttonState = digitalRead(buttonPin);
-//  Serial.println((String)force);
-  
  
-  
-  // if get an input from a pin, trigger softPurr. TODO figure out sensor later
+  force = analogRead(petPressurePin);
   if((force > 50 && force < 100) && !stateMorePurr){
     Log("MOVING TO SOFT PURR");
     stateWaiting = false;
@@ -97,8 +94,6 @@ void readPetSensor(){
     stateSoftPurr = false;
     stateMorePurr = true;
   }
-
-  
 }
 
 void showWaitingState(){
