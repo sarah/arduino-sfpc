@@ -35,21 +35,12 @@ cLEDMatrix<MATRIX_TILE_WIDTH, MATRIX_TILE_HEIGHT, HORIZONTAL_MATRIX, MATRIX_TILE
 
 uint8_t angle = 0;
 int inByte = 0;
-
-void setup()
-{
-  Serial.begin(57600);
-  Log("Hello");
-  FastLED.addLeds<CHIPSET, DATA_PIN,  COLOR_ORDER>(leds[0],leds.Size()).setCorrection(TypicalSMD5050);
-  FastLED.setBrightness(20);
-  FastLED.clear(true);
-
-}
-
-// FORCE SENSOR (PETTING)
-int pressurePin = A0;
+int petPressurePin = A0;
 int force;
+int buttonState = 0;
+int buttonPin = 2;
 
+#define LOGGING false
 void Log(String data){
   if(LOGGING){
     Serial.println(data);
@@ -58,15 +49,18 @@ void Log(String data){
 
 void loop()
 {
+
+  force = analogRead(petPressurePin);
+  Log((String)force);
+  buttonState = digitalRead(buttonPin);
+//  Serial.println((String)force);
+  
   if(stateWaiting){
     Log("Waiting");
     showWaitingState();
   }
   
   // if get an input from a pin, trigger softPurr. TODO figure out sensor later
-  force = analogRead(pressurePin);
-  Log((String)force);
-  
   if((force > 50 && force < 100) && !stateMorePurr){
     Log("MOVING TO SOFT PURR");
     stateWaiting = false;
@@ -75,7 +69,6 @@ void loop()
   
   if(force > 150){
     Log("Moving to moar purr");
-    Serial.print(MORE_PURR);
     stateSoftPurr = false;
     stateMorePurr = true;
   }
@@ -83,9 +76,7 @@ void loop()
   if(stateSoftPurr){
     Log("Softpurr");
     Serial.print(SOFT_PURR);
-  } 
-
-  if(stateMorePurr){
+  } else if(stateMorePurr){
     Log("Sending More purr");
     Serial.print(MORE_PURR);
   }
@@ -105,7 +96,7 @@ void PurrLights(){
   while(Serial.available() > 0){
     inByte = Serial.read();
     float radius = (float(inByte)/255.0)*14.0;
-    LightAreaCircle(radius);
+    LightAreaCircle2(radius);
     FastLED.show();
   }
 }
@@ -155,6 +146,17 @@ void LightAreaCircle(float input){
   }
 }
 
+
+void setup()
+{
+  Serial.begin(57600);
+  Log("Hello");
+  FastLED.addLeds<CHIPSET, DATA_PIN,  COLOR_ORDER>(leds[0],leds.Size()).setCorrection(TypicalSMD5050);
+  FastLED.setBrightness(20);
+  FastLED.clear(true);
+   pinMode(buttonPin, INPUT);
+
+}
 
 //  // Japanese Flag
 //  leds.DrawFilledRectangle(0, 0, leds.Width() - 1, leds.Height() - 1, CRGB(255, 255, 255));
