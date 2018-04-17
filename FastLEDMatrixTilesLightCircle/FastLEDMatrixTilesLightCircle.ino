@@ -1,6 +1,8 @@
 #include <FastLED.h>        //https://github.com/FastLED/FastLED
 #include <LEDMatrix.h>      //https://github.com/Jorgen-VikingGod/LEDMatrix
 
+FASTLED_USING_NAMESPACE
+
 // Change the next defines to match your matrix type and size
 #define DATA_PIN            6
 #define COLOR_ORDER         GRB
@@ -15,8 +17,7 @@
 #define MATRIX_SIZE         (MATRIX_WIDTH*MATRIX_HEIGHT)
 #define MATRIX_PANEL        (MATRIX_WIDTH*MATRIX_HEIGHT)
 #define NUM_LEDS            (MATRIX_WIDTH*MATRIX_HEIGHT)
-
-
+CRGB allLeds[NUM_LEDS];
 
 #define WAITING 0
 #define SOFT_PURR 100
@@ -113,10 +114,13 @@ void readPetSensor(){
 }
 
 void showWaitingState(){
-  // TODO get the circle where I want it.
     FastLED.clear();
-    leds.DrawFilledCircle((leds.Width() - 1) / 4, (leds.Height() - 1) / 4, 1, CRGB(255, 0, 0));
-    FastLED.show();
+    int i = 255;
+    for(i=255; i>90; i--){
+      leds.DrawFilledCircle(14,1, 1, CHSV(255, 255, i)); 
+      FastLED.show();
+      delay(1);
+    }
 }
 
 void PurrLights(){
@@ -125,13 +129,30 @@ void PurrLights(){
     Serial.flush();
     if(inByte < 251){
       float radius = (float(inByte)/255.0)*10.0;
-      LightAreaCircle2(radius);  
+//      LightAreaCircle2(radius, CRGB(255,255,255));  
+//      LightAreaCircle(radius);  
     } else {
-      ShowTestLight(0,0);
+      float radius = (float(inByte)/255.0)*10.0;
+//      LightAreaCircle2(radius, CRGB(0,255,0));  
+//        ShowTestLight(0,0);
+        
     }
+    addGlitter(50);
     FastLED.show();
   }
 }
+
+void addGlitter( fract8 chanceOfGlitter) 
+{
+  if( random8() < chanceOfGlitter) {
+    // get me n random leds
+    // glitter thos
+    
+//     leds((int)random(16), (int)random(16)) += CRGB::Pink;
+//    fadeToBlackBy( leds, NUM_LEDS, 20);
+  }
+}
+
 
 void ShowTestLight(int x,int y){
   Log("SHOW TEST LIGHT");
@@ -139,14 +160,14 @@ void ShowTestLight(int x,int y){
   leds(x,y) = CRGB(0,255,0);
   FastLED.show();
 }
-void LightAreaCircle2(float radius){
+void LightAreaCircle2(float radius, CRGB color){
   FastLED.clear();
   // TODO how to do the brightness here
   int x = (leds.Width() - 1)/2;
   int y = (leds.Height() - 1)/2;  
-  leds.DrawFilledCircle(x,y, radius, CRGB(255, 255,(255-radius)));
+  leds.DrawFilledCircle(x,y, radius, color);
   // just playing with color
-//  leds.DrawFilledCircle(x,y, max(radius-2,1), CHSV(255, 0,50));
+//  leds.DrawFilledCircle(x,y, radius/2, CRGB(0, 255,0));
 }
 
 void LightAreaCircle(float input){
