@@ -119,7 +119,6 @@ void showWaitingState(){
     for(i=255; i>90; i--){
       leds.DrawFilledCircle(14,1, 1, CHSV(255, 255, i)); 
       FastLED.show();
-      delay(1);
     }
 }
 
@@ -129,15 +128,15 @@ void PurrLights(){
     Serial.flush();
     if(inByte < 251){
       float radius = (float(inByte)/255.0)*10.0;
-//      LightAreaCircle2(radius, CRGB(255,255,255));  
+      LightAreaCircle2(radius, CRGB(255,255,255));  
 //      LightAreaCircle(radius);  
     } else {
       float radius = (float(inByte)/255.0)*10.0;
 //      LightAreaCircle2(radius, CRGB(0,255,0));  
-//        ShowTestLight(0,0);
+        ShowTestLight(0,0);
         
     }
-    addGlitter(50);
+//    addGlitter(50);
     FastLED.show();
   }
 }
@@ -165,7 +164,7 @@ void LightAreaCircle2(float radius, CRGB color){
   // TODO how to do the brightness here
   int x = (leds.Width() - 1)/2;
   int y = (leds.Height() - 1)/2;  
-  leds.DrawFilledCircle(x,y, radius, color);
+  leds.DrawFilledCircle(x,y, radius-2, color);
   // just playing with color
 //  leds.DrawFilledCircle(x,y, radius/2, CRGB(0, 255,0));
 }
@@ -200,15 +199,7 @@ void setup()
   Serial.begin(57600);
   Log("Hello");
   FastLED.addLeds<CHIPSET, DATA_PIN,  COLOR_ORDER>(leds[0],leds.Size()).setCorrection(TypicalSMD5050);
-  FastLED.setBrightness(20);
+  FastLED.setBrightness(10);
   FastLED.clear(true);
   pinMode(buttonPin, INPUT);
 }
-
-//  // Japanese Flag
-//  leds.DrawFilledRectangle(0, 0, leds.Width() - 1, leds.Height() - 1, CRGB(255, 255, 255));
-//  uint16_t r = min((leds.Width() - 1) / 2, (leds.Height() - 1) / 2) - 1;
-//  leds.DrawFilledCircle((leds.Width() - 1) / 2, (leds.Height() - 1) / 2, r, CRGB(255, 0, 0));
-//  FastLED.show();
-//  delay(5000);
-
